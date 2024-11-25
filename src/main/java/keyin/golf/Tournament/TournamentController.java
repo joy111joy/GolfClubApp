@@ -1,6 +1,7 @@
 package keyin.golf.Tournament;
 
 import keyin.golf.Member.Member;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,28 +19,24 @@ public class TournamentController {
         this.tournamentService = tournamentService;
     }
 
-    // Add a new tournament
     @PostMapping
     public ResponseEntity<Tournament> addTournament(@RequestBody Tournament tournament) {
         Tournament savedTournament = tournamentService.addTournament(tournament);
         return ResponseEntity.ok(savedTournament);
     }
 
-    // Get a tournament by ID
     @GetMapping("/{id}")
     public ResponseEntity<Tournament> getTournamentById(@PathVariable Long id) {
         Optional<Tournament> tournament = tournamentService.getTournamentById(id);
         return tournament.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Get all tournaments
     @GetMapping
     public ResponseEntity<List<Tournament>> getAllTournaments() {
         List<Tournament> tournaments = tournamentService.getAllTournaments();
         return ResponseEntity.ok(tournaments);
     }
 
-    // Search tournaments
     @GetMapping("/search")
     public ResponseEntity<List<Tournament>> searchTournaments(
             @RequestParam(required = false) String location,
@@ -56,14 +53,30 @@ public class TournamentController {
         }
     }
 
-    // Add a member to a tournament
-    @PostMapping("/{tournamentId}/members")
-    public ResponseEntity<Void> addMemberToTournament(@PathVariable Long tournamentId, @RequestBody Member member) {
-        tournamentService.addMemberToTournament(tournamentId, member);
-        return ResponseEntity.ok().build();
+    @PostMapping("/{tournamentId}/members/{memberId}")
+    public ResponseEntity<String> addMemberToTournament(
+            @PathVariable Long tournamentId,
+            @PathVariable Long memberId) {
+        System.out.println("Received request to add member to tournament.");
+        System.out.println("Tournament ID: " + tournamentId);
+        System.out.println("Member ID: " + memberId);
+
+        try {
+            System.out.println("Invoking service to add member to tournament...");
+            tournamentService.addMemberToTournament(tournamentId, memberId);
+            System.out.println("Member successfully added to the tournament.");
+            return ResponseEntity.ok("Member added to tournament successfully");
+        } catch (Exception e) {
+            System.err.println("Error while adding member to tournament: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
-    // Get all members in a tournament
+
+
+
+
     @GetMapping("/{tournamentId}/members")
     public ResponseEntity<List<Member>> getMembersInTournament(@PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentWithMembers(tournamentId);

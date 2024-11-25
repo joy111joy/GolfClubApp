@@ -1,5 +1,6 @@
 package keyin.golf.Tournament;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import keyin.golf.Member.Member;
 
@@ -36,9 +37,9 @@ public class Tournament {
             joinColumns = @JoinColumn(name = "tournament_id"),
             inverseJoinColumns = @JoinColumn(name = "member_id")
     )
+    @JsonManagedReference
     private Set<Member> members = new HashSet<>();
 
-    // Constructors
     public Tournament() {}
 
     public Tournament(LocalDate startDate, LocalDate endDate, String location, Double entryFee, Double cashPrize) {
@@ -49,7 +50,6 @@ public class Tournament {
         this.cashPrize = cashPrize;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -106,7 +106,6 @@ public class Tournament {
         this.members = members;
     }
 
-    // Utility methods for Many-to-Many relationship
     public void addMember(Member member) {
         this.members.add(member);
         member.getTournaments().add(this);
