@@ -1,5 +1,6 @@
 package keyin.golf.Member;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import keyin.golf.Tournament.Tournament;
 
@@ -31,12 +32,12 @@ public class Member {
     private LocalDate startDate;
 
     @Column(name = "duration")
-    private Integer duration; // Membership duration in months
+    private Integer duration;
 
     @ManyToMany(mappedBy = "members", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonBackReference
     private Set<Tournament> tournaments = new HashSet<>();
 
-    // Constructors
     public Member() {}
 
     public Member(String name, String address, String email, String phoneNumber, LocalDate startDate, Integer duration) {
@@ -48,7 +49,6 @@ public class Member {
         this.duration = duration;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -113,7 +113,6 @@ public class Member {
         this.tournaments = tournaments;
     }
 
-    // Utility methods for Many-to-Many relationship
     public void addTournament(Tournament tournament) {
         this.tournaments.add(tournament);
         tournament.getMembers().add(this);

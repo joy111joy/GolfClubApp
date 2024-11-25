@@ -17,21 +17,19 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    // Add a new member
     @PostMapping
     public ResponseEntity<Member> addMember(@RequestBody Member member) {
         Member savedMember = memberService.addMember(member);
         return ResponseEntity.ok(savedMember);
     }
 
-    // Get a member by ID
+
     @GetMapping("/{id}")
     public ResponseEntity<Member> getMemberById(@PathVariable Long id) {
         Optional<Member> member = memberService.getMemberById(id);
         return member.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Get all members
     @GetMapping
     public ResponseEntity<List<Member>> getAllMembers() {
         List<Member> members = memberService.getAllMembers();
@@ -51,15 +49,15 @@ public class MemberController {
             return ResponseEntity.ok(memberService.searchMembersByPhoneNumber(phoneNumber));
         } else if (startDate != null) {
             try {
-                LocalDate parsedDate = LocalDate.parse(startDate); // Parse the String to LocalDate
+                LocalDate parsedDate = LocalDate.parse(startDate);
                 return ResponseEntity.ok(memberService.searchMembersByStartDate(parsedDate));
             } catch (Exception e) {
-                return ResponseEntity.badRequest().body(List.of()); // Return 400 if the date format is invalid
+                return ResponseEntity.badRequest().body(List.of());
             }
         } else if (keyword != null) {
             return ResponseEntity.ok(memberService.searchMembersByKeyword(keyword));
         } else {
-            return ResponseEntity.badRequest().build(); // Return 400 if no parameters are provided
+            return ResponseEntity.badRequest().build();
         }
     }
 
